@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketPulse - Trading Insights Platform</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .logo span {
+            color: var(--secondary-color);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+        
+        .widget {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .widget-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .widget-content {
+            margin-top: 1rem;
+        }
+        
+        .market-select {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .market-select select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            flex-grow: 1;
+        }
+        
+        .time-frames {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .time-frame {
+            padding: 0.5rem 1rem;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .time-frame.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .prediction-card {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .prediction-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .prediction-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .prediction-up .prediction-icon {
+            background-color: var(--success-color);
+        }
+        
+        .prediction-down .prediction-icon {
+            background-color: var(--danger-color);
+        }
+        
+        .prediction-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .prediction-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .prediction-timestamp {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .prediction-probability {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .prediction-up .prediction-probability {
+            color: var(--success-color);
+        }
+        
+        .prediction-down .prediction-probability {
+            color: var(--danger-color);
+        }
+        
+        .chart-container {
+            height: 300px;
+            width: 100%;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+        
+        .news-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .news-impact {
+            width: 4px;
+            margin-right: 1rem;
+            background-color: var(--secondary-color);
+            border-radius: 2px;
+        }
+        
+        .news-impact.high {
+            background-color: var(--danger-color);
+        }
+        
+        .news-impact.medium {
+            background-color: var(--warning-color);
+        }
+        
+        .news-impact.low {
+            background-color: var(--success-color);
+        }
+        
+        .news-content h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .news-meta {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+        
+        .strategy-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .strategy-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .strategy-name {
+            font-weight: 600;
+        }
+        
+        .strategy-signal {
+            font-weight: 600;
+        }
+        
+        .strategy-signal.buy {
+            color: var(--success-color);
+        }
+        
+        .strategy-signal.sell {
+            color: var(--danger-color);
+        }
+        
+        .strategy-signal.neutral {
+            color: var(--warning-color);
+        }
+        
+        .strategy-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Market<span>Pulse</span></div>
+        <nav>
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Strategies</a></li>
+                <li><a href="#">Analytics</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="dashboard">
+            <div class="left-column">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Market Selection</div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="market-select">
+                            <select id="market-type">
+                                <option value="forex">Forex</option>
+                                <option value="stocks">Stocks</option>
+                                <option value="crypto">Cryptocurrency</option>
+                                <option value="commodities">Commodities</option>
+                            </select>
+                            <select id="specific-market">
+                                <option value="eurusd">EUR/USD</option>
+                                <option value="gbpusd">GBP/USD</option>
+                                <option value="usdjpy">USD/JPY</option>
+                                <option value="audusd">AUD/USD</option>
+                            </select>
+                        </div>
+                        <div class="time-frames">
+                            <div class="time-frame active">5 min</div>
+                            <div class="time-frame">10 min</div>
+                            <div class="time-frame">15 min</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Predictions</div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="prediction-card prediction-up">
+                            <div class="prediction-info">
+                                <div class="prediction-icon">↑</div>
+                                <div class="prediction-details">
+                                    <div class="prediction-title">5 Minute Forecast</div>
+                                    <div class="prediction-timestamp">Updated 2 mins ago</div>
+                                </div>
+                            </div>
+                            <div class="prediction-probability">68%</div>
+                        </div>
+                        
+                        <div class="prediction-card prediction-down">
+                            <div class="prediction-info">
+                                <div class="prediction-icon">↓</div>
+                                <div class="prediction-details">
+                                    <div class="prediction-title">10 Minute Forecast</div>
+                                    <div class="prediction-timestamp">Updated 2 mins ago</div>
+                                </div>
+                            </div>
+                            <div class="prediction-probability">72%</div>
+                        </div>
+                        
+                        <div class="prediction-card prediction-up">
+                            <div class="prediction-info">
+                                <div class="prediction-icon">↑</div>
+                                <div class="prediction-details">
+                                    <div class="prediction-title">15 Minute Forecast</div>
+                                    <div class="prediction-timestamp">Updated 2 mins ago</div>
+                                </div>
+                            </div>
+                            <div class="prediction-probability">59%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Trading Strategies</div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="strategy-item">
+                            <div class="strategy-header">
+                                <div class="strategy-name">Wyckoff Method</div>
+                                <div class="strategy-signal buy">BUY</div>
+                            </div>
+                            <div class="strategy-description">
+                                Market currently in accumulation phase with decreasing volume on downward moves.
+                            </div>
+                        </div>
+                        
+                        <div class="strategy-item">
+                            <div class="strategy-header">
+                                <div class="strategy-name">Soros Reflexivity</div>
+                                <div class="strategy-signal sell">SELL</div>
+                            </div>
+                            <div class="strategy-description">
+                                Market sentiment appears overly positive despite fundamental indicators.
+                            </div>
+                        </div>
+                        
+                        <div class="strategy-item">
+                            <div class="strategy-header">
+                                <div class="strategy-name">Livermore Pivots</div>
+                                <div class="strategy-signal neutral">NEUTRAL</div>
+                            </div>
+                            <div class="strategy-description">
+                                Awaiting confirmation on key pivot point break before entering position.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Market Chart</div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="chart-container">
+                            [Interactive market chart would be displayed here]
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Market News Impact</div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="news-item">
+                            <div class="news-impact high"></div>
+                            <div class="news-content">
+                                <h4>Fed Signals Possible Rate Cut Next Month</h4>
+                                <div class="news-meta">12 minutes ago • High Impact</div>
+                                <p>Federal Reserve Chair indicates greater openness to rate cuts following positive inflation data.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="news-item">
+                            <div class="news-impact medium"></div>
+                            <div class="news-content">
+                                <h4>EUR/USD Technical Analysis Shows Resistance</h4>
+                                <div class="news-meta">27 minutes ago • Medium Impact</div>
+                                <p>The pair is encountering resistance at the 1.1050 level with bearish divergence on the RSI.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="news-item">
+                            <div class="news-impact low"></div>
+                            <div class="news-content">
+                                <h4>European Market Opening Significantly Higher</h4>
+                                <div class="news-meta">43 minutes ago • Low Impact</div>
+                                <p>European indices opened higher, potentially strengthening the Euro in morning trading.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Technical Analysis</div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="strategy-item">
+                            <div class="strategy-header">
+                                <div class="strategy-name">Moving Averages</div>
+                                <div class="strategy-signal sell">SELL</div>
+                            </div>
+                            <div class="strategy-description">
+                                Price below 20 EMA, with bearish crossover of 50 and 200 MA recently confirmed.
+                            </div>
+                        </div>
+                        
+                        <div class="strategy-item">
+                            <div class="strategy-header">
+                                <div class="strategy-name">RSI Analysis</div>
+                                <div class="strategy-signal buy">BUY</div>
+                            </div>
+                            <div class="strategy-description">
+                                Current RSI at 31.2 indicates oversold conditions with positive divergence forming.
+                            </div>
+                        </div>
+                        
+                        <div class="strategy-item">
+                            <div class="strategy-header">
+                                <div class="strategy-name">Fibonacci Retracement</div>
+                                <div class="strategy-signal buy">BUY</div>
+                            </div>
+                            <div class="strategy-description">
+                                Price rebounding from key 61.8% Fibonacci level with increased volume.
+                            </div>
+                        </div>
+                        
+                        <div class="strategy-item">
+                            <div class="strategy-header">
+                                <div class="strategy-name">Support/Resistance</div>
+                                <div class="strategy-signal neutral">NEUTRAL</div>
+                            </div>
+                            <div class="strategy-description">
+                                Price currently consolidating between strong support at 1.0920 and resistance at 1.1050.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // This would be where you connect to trading platforms via their APIs
+        // and implement the prediction algorithms
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Time frame selection
+            const timeFrames = document.querySelectorAll('.time-frame');
+            timeFrames.forEach(frame => {
+                frame.addEventListener('click', function() {
+                    timeFrames.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    // Here would be code to update predictions based on selected time frame
+                });
+            });
+            
+            // Market selection changes
+            const marketType = document.getElementById('market-type');
+            const specificMarket = document.getElementById('specific-market');
+            
+            marketType.addEventListener('change', function() {
+                // Here would be code to update the specific market dropdown based on market type
+                // And to fetch new prediction data
+                
+                // Example of updating markets based on selection
+                if (this.value === 'forex') {
+                    specificMarket.innerHTML = `
+                        <option value="eurusd">EUR/USD</option>
+                        <option value="gbpusd">GBP/USD</option>
+                        <option value="usdjpy">USD/JPY</option>
+                        <option value="audusd">AUD/USD</option>
+                    `;
+                } else if (this.value === 'stocks') {
+                    specificMarket.innerHTML = `
+                        <option value="aapl">Apple</option>
+                        <option value="msft">Microsoft</option>
+                        <option value="googl">Google</option>
+                        <option value="amzn">Amazon</option>
+                    `;
+                } else if (this.value === 'crypto') {
+                    specificMarket.innerHTML = `
+                        <option value="btcusd">BTC/USD</option>
+                        <option value="ethusd">ETH/USD</option>
+                        <option value="xrpusd">XRP/USD</option>
+                        <option value="ltcusd">LTC/USD</option>
+                    `;
+                } else if (this.value === 'commodities') {
+                    specificMarket.innerHTML = `
+                        <option value="xauusd">Gold</option>
+                        <option value="xagusd">Silver</option>
+                        <option value="clusd">Crude Oil</option>
+                        <option value="ngusd">Natural Gas</option>
+                    `;
+                }
+            });
+            
+            specificMarket.addEventListener('change', function() {
+                // Here would be code to update predictions based on selected market
+            });
+            
+            // In a real implementation, you would have code here to:
+            // 1. Connect to trading platform APIs
+            // 2. Implement predictive algorithms based on strategies
+            // 3. Update predictions in real-time
+            // 4. Process market news and determine impact
+            // 5. Generate technical analysis
+        });
+    </script>
+</body>
+</html>
